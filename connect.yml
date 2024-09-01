@@ -1,0 +1,38 @@
+version: '3.9'
+services:
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    container_name: nginx-server
+    networks:
+      - npm_public
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+    networks:
+      - npm_public
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: example_db
+      MYSQL_USER: example_user
+      MYSQL_PASSWORD: example_pass
+    networks:
+      - npm_public
+
+networks:
+  npm_public:
+    name: npm_public
+    external: true
+
